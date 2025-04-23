@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f4f8;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .tabs {
+      display: flex;
+      flex-direction: column;
+      background-color: #2c3e50;
+      padding: 10px;
+      width: 250px;
+      min-height: 100vh;
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .tabs button {
+      background-color: #34495e;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 20px;
+      margin: 6px 0;
+      border-radius: 10px;
+      color: white;
+      font-size: 17px;
+      text-align: left;
+      transition: 0.3s;
+    }
+
+    .tabs button:hover {
+      background-color: #1abc9c;
+    }
+
+    .tabs button.active {
+      background-color: #16a085;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .content-wrapper {
+      flex-grow: 1;
+      padding: 30px;
+    }
+
+    .tabcontent {
+      display: none;
+    }
+
+    .project-box {
+      background: linear-gradient(135deg, #ffffff, #e0f7fa);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 0 auto;
+      max-width: 900px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .project-box h2 {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      font-size: 28px;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      background: white;
+      padding: 12px 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .label {
+      flex: 0 0 200px;
+      font-weight: 600;
+      font-size: 16px;
+      color: #34495e;
+    }
+
+    .editable {
+      flex-grow: 1;
+      background-color: #f7fbff;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      min-height: 20px;
+    }
+
+    .editable:focus {
+      background-color: #fffecf;
+      border-color: #1abc9c;
+    }
+
+    @media (max-width: 600px) {
+      .row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .label {
+        margin-bottom: 8px;
+        flex: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="tabs" id="projectTabs"></div>
+<div class="content-wrapper" id="tabContents"></div>
+
+<script>
+  const projects = [
+    { name: "Quarter Close", data: { Python: "", Appian: "Ravi/Divya/Jahnavi", VBA: "", Status: "On Hold", PresentDayStatus: "Awaiting SME feedback.", TargetDate: "" } },
+    { name: "ABF Client Tracker", data: { Python: "", Appian: "Ravi/Divya/Murali", VBA: "", Status: "In Progress", PresentDayStatus: "BRD signed off. Development starts 14-Apr", TargetDate: "23-May" } },
+    { name: "ABF Activity Tracker", data: { Python: "", Appian: "Ravi/Divya/Murali", VBA: "", Status: "In Progress", PresentDayStatus: "Report page and weekly report being created", TargetDate: "18-Apr" } },
+    { name: "LP Template Portfolio", data: { Python: "Ayush/Bilwa", Appian: "Magesh/Jahnavi", VBA: "", Status: "On Hold", PresentDayStatus: "ER creation in progress, BRD pending", TargetDate: "" } },
+    { name: "PWS (Subscriptions & Redemptions Automation)", data: { Python: "Gaurav", Appian: "", VBA: "", Status: "Completed", PresentDayStatus: "Waiting for deployment", TargetDate: "" } },
+    { name: "CLO Daily Recon -1", data: { Python: "Gaurav/Chandra", Appian: "", VBA: "", Status: "Planned", PresentDayStatus: "BRD signed off. Dev starts 9-Apr", TargetDate: "" } },
+    { name: "CLO Cash & Position Recon (Monthly) -2", data: { Python: "Gaurav/Chandra", Appian: "", VBA: "", Status: "In Progress", PresentDayStatus: "Cash dev in progress", TargetDate: "10-Apr" } },
+    { name: "TIA (Taxable Income & Loss Update)", data: { Python: "Ayush/Bilwa", Appian: "Magesh", VBA: "", Status: "Initiated", PresentDayStatus: "Requirements gathered", TargetDate: "17-Apr" } },
+    { name: "73 Strings", data: { Python: "Ayush", Appian: "", VBA: "", Status: "Code Review", PresentDayStatus: "Code pushed to GitLab", TargetDate: "" } },
+    { name: "Public Market Equivalent (PME) Automation (BXTI)", data: { Python: "", Appian: "", VBA: "Shahnawaz", Status: "Working", PresentDayStatus: "Working as per SME", TargetDate: "27-Mar" } },
+    { name: "LTD Tax Withholdings/Cash", data: { Python: "", Appian: "", VBA: "Shahnawaz", Status: "Pending", PresentDayStatus: "Awaiting Snowflake dashboard", TargetDate: "" } },
+    { name: "Tax-K1", data: { Python: "Gaurav/Naheed", Appian: "Ravi/Divya", VBA: "", Status: "In Progress", PresentDayStatus: "Code review phase", TargetDate: "" } },
+    { name: "PME Automation for BXG", data: { Python: "", Appian: "", VBA: "Shahnawaz", Status: "Completed", PresentDayStatus: "Code freeze", TargetDate: "" } },
+    { name: "PME Automation for PE", data: { Python: "", Appian: "", VBA: "Shahnawaz", Status: "In Progress", PresentDayStatus: "Under testing", TargetDate: "" } },
+    { name: "Allocation Report", data: { Python: "", Appian: "", VBA: "Shahnawaz", Status: "Initiated", PresentDayStatus: "Initial setup", TargetDate: "" } },
+    { name: "Fund Update Automation", data: { Python: "", Appian: "", VBA: "Ritwick", Status: "Active", PresentDayStatus: "Automation in progress", TargetDate: "" } },
+    { name: "Bond PAI Automation", data: { Python: "Naheed", Appian: "", VBA: "", Status: "Testing", PresentDayStatus: "Results under validation", TargetDate: "" } },
+    { name: "Participation to Principle Conversion", data: { Python: "", Appian: "", VBA: "Chandra", Status: "On Hold", PresentDayStatus: "Documentation stage", TargetDate: "" } }
+  ];
+
+  const tabsContainer = document.getElementById('projectTabs');
+  const contentsContainer = document.getElementById('tabContents');
+
+  function loadSavedData(projectName, key) {
+    return localStorage.getItem(`proj-${projectName}-${key}`) || "";
+  }
+
+  function saveData(projectName, key, value) {
+    localStorage.setItem(`proj-${projectName}-${key}`, value);
+  }
+
+  projects.forEach((project, index) => {
+    const tabButton = document.createElement('button');
+    tabButton.textContent = project.name;
+    tabButton.onclick = () => openTab(index);
+    if (index === 0) tabButton.classList.add('active');
+    tabsContainer.appendChild(tabButton);
+
+    const tabContent = document.createElement('div');
+    tabContent.className = 'tabcontent';
+    if (index === 0) tabContent.style.display = 'block';
+
+    const rows = Object.entries(project.data).map(([label, _]) => {
+      const savedValue = loadSavedData(project.name, label) || project.data[label];
+      return `
+        <div class="row">
+          <div class="label">${label}:</div>
+          <div class="editable" contenteditable="true" 
+               oninput="saveData('${project.name}', '${label}', this.innerText)">
+               ${savedValue}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    tabContent.innerHTML = `
+      <div class="project-box">
+        <h2>${project.name}</h2>
+        ${rows}
+      </div>
+    `;
+
+    contentsContainer.appendChild(tabContent);
+  });
+
+  function openTab(index) {
+    document.querySelectorAll('.tabcontent').forEach((tab, i) => {
+      tab.style.display = i === index ? 'block' : 'none';
+    });
+    document.querySelectorAll('.tabs button').forEach((btn, i) => {
+      btn.classList.toggle('active', i === index);
+    });
+  }
+
+  window.saveData = saveData; // expose saveData globally for oninput to work
+</script>
+
+
+</body>
+</html>
